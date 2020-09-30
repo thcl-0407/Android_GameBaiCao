@@ -1,17 +1,20 @@
 package com.thcloc.gamebaicao_17041281;
 
-import androidx.annotation.DrawableRes;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
+import android.bluetooth.BluetoothHidDeviceAppQosSettings;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -35,28 +38,34 @@ public class MainActivity extends AppCompatActivity {
     int Diem_Player02 = 0;
 
     Button btnChiaBai;
+    Button btnCheDoChoi;
+    Button btnXemBangDiem;
 
-    ImageView Card_May_01;
-    ImageView Card_May_02;
-    ImageView Card_May_03;
-    ImageView Card_Nguoi_01;
-    ImageView Card_Nguoi_02;
-    ImageView Card_Nguoi_03;
+    ImageView Card_Player01_01;
+    ImageView Card_Player01_02;
+    ImageView Card_Player01_03;
+    ImageView Card_Player02_01;
+    ImageView Card_Player02_02;
+    ImageView Card_Player02_03;
 
+    TextView txtTen_Player01;
+    TextView txtTen_Player02;
     TextView txtDiem_Player01;
     TextView txtDiem_Player02;
 
     ArrayList<Card> PLayer01_ListCard;
     ArrayList<Card> PLayer02_ListCard;
 
-    LinearLayout container_logo_winner_player01;
-    LinearLayout container_logo_winner_player02;
-
-    ImageView logo_winner_player01;
-    ImageView logo_winner_player02;
-
+    TextView logo_winner_player01;
+    TextView logo_winner_player02;
     TextView logo_draw_player01;
     TextView logo_draw_player02;
+    TextView logo_close_player01;
+    TextView logo_close_player02;
+
+    RadioButton rbtn_Nguoi_May;
+    RadioButton rbtn_Nguoi_Nguoi;
+    RadioButton rbtn_May_May;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,43 +76,50 @@ public class MainActivity extends AppCompatActivity {
 
         Init_Data();
         btnChiaBai_Click();
+        btnCheDoChoi_Click();
+        btnXemBangDiem_Click();
 
-        Card_May_01_Click();
-        Card_May_02_Click();
-        Card_May_03_Click();
-        Card_Nguoi_01_Click();
-        Card_Nguoi_02_Click();
-        Card_Nguoi_03_Click();
+        Card_Player01_01_Click();
+        Card_Player01_02_Click();
+        Card_Player01_03_Click();
+        Card_Player02_01_Click();
+        Card_Player02_02_Click();
+        Card_Player02_03_Click();
     }
 
     protected void Init_Data() {
         Init_PlayingCard();
 
+        btnCheDoChoi = (Button) findViewById(R.id.btnCheDoiChoi);
         btnChiaBai = (Button) findViewById(R.id.btnChiaBai);
+        btnXemBangDiem = (Button) findViewById(R.id.btnXemBangDiem);
 
-        Card_May_01 = (ImageView) findViewById(R.id.card_may_01);
-        Card_May_02 = (ImageView) findViewById(R.id.card_may_02);
-        Card_May_03 = (ImageView) findViewById(R.id.card_may_03);
+        Card_Player01_01 = (ImageView) findViewById(R.id.card_player01_01);
+        Card_Player01_02 = (ImageView) findViewById(R.id.card_player01_02);
+        Card_Player01_03 = (ImageView) findViewById(R.id.card_player01_03);
 
-        Card_Nguoi_01 = (ImageView) findViewById(R.id.card_nguoi_01);
-        Card_Nguoi_02 = (ImageView) findViewById(R.id.card_nguoi_02);
-        Card_Nguoi_03 = (ImageView) findViewById(R.id.card_nguoi_03);
+        Card_Player02_01 = (ImageView) findViewById(R.id.card_player02_01);
+        Card_Player02_02 = (ImageView) findViewById(R.id.card_player02_02);
+        Card_Player02_03 = (ImageView) findViewById(R.id.card_player02_03);
 
+        txtTen_Player01 = (TextView) findViewById(R.id.txtTen_Player01);
+        txtTen_Player02 = (TextView) findViewById(R.id.txtTen_Player02);
         txtDiem_Player01 = (TextView) findViewById(R.id.txtDiem_Player01);
         txtDiem_Player02 = (TextView) findViewById(R.id.txtDiem_Player02);
 
-        container_logo_winner_player01 = (LinearLayout) findViewById(R.id.container_logo_winner_player01);
-        container_logo_winner_player02 = (LinearLayout) findViewById(R.id.container_logo_winner_player02);
-
-        logo_winner_player01 = (ImageView) findViewById(R.id.logo_winner_player01);
-        logo_winner_player02 = (ImageView) findViewById(R.id.logo_winner_player02);
+        logo_winner_player01 = (TextView) findViewById(R.id.logo_winner_player01);
+        logo_winner_player02 = (TextView) findViewById(R.id.logo_winner_player02);
 
         logo_draw_player01 = (TextView) findViewById(R.id.logo_draw_player01);
         logo_draw_player02 = (TextView) findViewById(R.id.logo_draw_player02);
 
+        logo_close_player01 = (TextView) findViewById(R.id.logo_close_player01);
+        logo_close_player02 = (TextView) findViewById(R.id.logo_close_player02);
+
         Control_Card_ON_OFF(false, false);
     }
 
+    //Khởi Tạo Danh Sách Bộ Bài
     protected void Init_PlayingCard() {
         //02
         ListPlayingCard.add(new Card("2", "h", R.drawable.h2));
@@ -184,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
         ListPlayingCard.add(new Card("a", "s", R.drawable.sa));
     }
 
+    //Click Chia Bài
     protected void btnChiaBai_Click() {
         btnChiaBai.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -192,160 +209,241 @@ public class MainActivity extends AppCompatActivity {
                     //Bắt Đầu Chia Bài
                     ChiaBai();
 
-                    Card_May_01.setImageResource(R.drawable.background);
-                    Card_May_02.setImageResource(R.drawable.background);
-                    Card_May_03.setImageResource(R.drawable.background);
+                    //Config Background Thẻ Bài
+                    Card_Player01_01.setImageResource(R.drawable.background);
+                    Card_Player01_02.setImageResource(R.drawable.background);
+                    Card_Player01_03.setImageResource(R.drawable.background);
 
-                    Card_Nguoi_01.setImageResource(R.drawable.background);
-                    Card_Nguoi_02.setImageResource(R.drawable.background);
-                    Card_Nguoi_03.setImageResource(R.drawable.background);
+                    Card_Player02_01.setImageResource(R.drawable.background);
+                    Card_Player02_02.setImageResource(R.drawable.background);
+                    Card_Player02_03.setImageResource(R.drawable.background);
 
                     //Config Chế Độ Chơi
-                    if(CheDoChoi == 0){
+                    if (CheDoChoi == 0) {
                         Control_Card_ON_OFF(false, true);
+                    }
+                    if (CheDoChoi == 2) {
+                        Control_Card_ON_OFF(false, false);
+                        Show_Player_EndGame(CheDoChoi, WhoIsWinner(CheDoChoi));
                     }
 
                     isChiaBai = true;
                     btnChiaBai.setText("Ván Mới");
+
+                    //Ẩn Nút Chế Độ Chơi
+                    btnCheDoChoi.setVisibility(View.GONE);
+
+                    //Ẩn Nút Xem Bảng Điểm
+                    btnXemBangDiem.setVisibility(View.GONE);
+
                 } else {
                     //Reset Ván Mới
-                    Card_May_01.setImageResource(android.R.color.transparent);
-                    Card_May_02.setImageResource(android.R.color.transparent);
-                    Card_May_03.setImageResource(android.R.color.transparent);
+                    //------------------------------------------------------------
+                    //Reset Background
+                    Card_Player01_01.setImageResource(android.R.color.transparent);
+                    Card_Player01_02.setImageResource(android.R.color.transparent);
+                    Card_Player01_03.setImageResource(android.R.color.transparent);
 
-                    Card_Nguoi_01.setImageResource(android.R.color.transparent);
-                    Card_Nguoi_02.setImageResource(android.R.color.transparent);
-                    Card_Nguoi_03.setImageResource(android.R.color.transparent);
+                    Card_Player02_01.setImageResource(android.R.color.transparent);
+                    Card_Player02_02.setImageResource(android.R.color.transparent);
+                    Card_Player02_03.setImageResource(android.R.color.transparent);
+                    //------------------------------------------------------------
 
+                    //Reset Giá Trị Liên Quan
                     isChiaBai = false;
-                    btnChiaBai.setText("Chia Bài");
+                    btnChiaBai.setText("Chia");
                     isDone_MoBai = 0;
                     PLayer01_ListCard.clear();
                     PLayer02_ListCard.clear();
 
-                    //Xử Lý Các Logo Thông Báo End Game
-                    container_logo_winner_player01.setVisibility(View.GONE);
-                    container_logo_winner_player02.setVisibility(View.GONE);
+                    //Hiện Nút Chế Độ Chơi
+                    btnCheDoChoi.setVisibility(View.VISIBLE);
+                    //Hiện Nút Xem Bảng Điểm
+                    btnXemBangDiem.setVisibility(View.VISIBLE);
+
+                    //Ẩn Các Logo Thông Báo End Game
                     logo_winner_player01.setVisibility(View.GONE);
                     logo_winner_player02.setVisibility(View.GONE);
+                    logo_close_player01.setVisibility(View.GONE);
+                    logo_close_player02.setVisibility(View.GONE);
                     logo_draw_player01.setVisibility(View.GONE);
                     logo_draw_player02.setVisibility(View.GONE);
                 }
             }
         });
     }
-    //---------------------------------------------------
 
-    protected void Card_May_01_Click(){}
-    protected void Card_May_02_Click(){}
-    protected void Card_May_03_Click(){}
-
-    protected void Card_Nguoi_01_Click(){
-        Card_Nguoi_01.setOnClickListener(new View.OnClickListener() {
+    //Click Đổi Chế Độ Chơi
+    protected void btnCheDoChoi_Click(){
+        btnCheDoChoi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Lỗi Chưa Click Chia Bài
-                if(PLayer02_ListCard.size() == 0){
-                    return;
+                final Dialog dialog = new Dialog(MainActivity.this);
+                dialog.requestWindowFeature(Window.FEATURE_ACTION_BAR);
+                dialog.setContentView(R.layout.layout_che_do_choi);
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.getWindow().setLayout(800, 800);//<---Set Kích Thước
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));//<---Ẩn Background Dialog
+
+                rbtn_Nguoi_May = (RadioButton) dialog.findViewById(R.id.rbtn_Nguoi_May);
+                rbtn_Nguoi_Nguoi = (RadioButton) dialog.findViewById(R.id.rbtn_Nguoi_Nguoi);
+                rbtn_May_May = (RadioButton) dialog.findViewById(R.id.rbtn_May_May);
+
+                Button btnThucHienCheDoChoi = (Button) dialog.findViewById(R.id.btnDoiCheDoChoi);
+                Button btnHuy_CheDoiChoi = (Button) dialog.findViewById(R.id.btnHuyThucHien_CheDoChoi);
+
+                if(CheDoChoi == 0){
+                    rbtn_Nguoi_May.setChecked(true);
+                }
+                if(CheDoChoi == 1){
+                    rbtn_Nguoi_Nguoi.setChecked(true);
+                }
+                if(CheDoChoi == 2){
+                    rbtn_May_May.setChecked(true);
                 }
 
-                Card card = PLayer02_ListCard.get(0);
+                btnThucHienCheDoChoi.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(rbtn_Nguoi_May.isChecked()){
+                            CheDoChoi = 0;
+                        }
+                        if(rbtn_Nguoi_Nguoi.isChecked()){
+                            CheDoChoi = 1;
+                        }
+                        if(rbtn_May_May.isChecked()){
+                            CheDoChoi = 2;
+                        }
+
+                        Update_CheDoiChoi(CheDoChoi);
+                        dialog.cancel();
+                    }
+                });
+
+                btnHuy_CheDoiChoi.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.cancel();
+                    }
+                });
+
+                dialog.show();
+            }
+        });
+    }
+
+    //Click Xem Bảng Điểm
+    protected void btnXemBangDiem_Click(){
+        btnXemBangDiem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+    }
+
+    //Click Mở Bài 01_Player01
+    protected void Card_Player01_01_Click() {
+
+    }
+
+    //Click Mở Bài 02_Player01
+    protected void Card_Player01_02_Click() {
+
+    }
+
+    //Click Mở Bài 03_Player01
+    protected void Card_Player01_03_Click() {
+
+    }
+
+    //Click Mở Bài 01_Player02
+    protected void Card_Player02_01_Click() {
+        Card_Player02_01.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isDone_MoBai += 1;
+                Card_Player02_01.setEnabled(false);
+                Card_Player02_01.setImageResource(PLayer02_ListCard.get(0).getIMG_SRC());//<----Hiển Thị Lá Bài
 
                 //Chế Độ Chơi Người vs Máy
-                if(CheDoChoi == 0){
-                    Card_Nguoi_01.setImageResource(card.getIMG_SRC());
-                    Card_Nguoi_01.setEnabled(false);
-                    isDone_MoBai += 1;
-
-                    //Xử Lý End Game --- Mở Hết Bài
-                    if(isDone_MoBai == 3){
-                        Show_Player_EndGame(CheDoChoi, WhoIsWinner(CheDoChoi));
+                if (CheDoChoi == 0 && isDone_MoBai == 3) {
+                    //Khi Mở Bài Hoàn Tất
+                    if (WhoIsWinner(CheDoChoi) == 0) {
+                        Show_Player_EndGame(CheDoChoi, 0);
                     }
-                }
-
-                //Chế Độ Chơi Người vs Người
-                if(CheDoChoi == 1){
-
+                    if (WhoIsWinner(CheDoChoi) == 1) {
+                        Show_Player_EndGame(CheDoChoi, 1);
+                    }
+                    if (WhoIsWinner(CheDoChoi) == 2) {
+                        Show_Player_EndGame(CheDoChoi, 2);
+                    }
                 }
             }
         });
     }
 
-    protected void Card_Nguoi_02_Click(){
-        Card_Nguoi_02.setOnClickListener(new View.OnClickListener() {
+    //Click Mở Bài 02_Player02
+    protected void Card_Player02_02_Click() {
+        Card_Player02_02.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Lỗi Chưa Click Chia Bài
-                if(PLayer02_ListCard.size() == 0){
-                    return;
-                }
-
-                Card card = PLayer02_ListCard.get(1);
+                isDone_MoBai += 1;
+                Card_Player02_02.setEnabled(false);
+                Card_Player02_02.setImageResource(PLayer02_ListCard.get(1).getIMG_SRC());//<----Hiển Thị Lá Bài
 
                 //Chế Độ Chơi Người vs Máy
-                if(CheDoChoi == 0){
-                    Card_Nguoi_02.setImageResource(card.getIMG_SRC());
-                    Card_Nguoi_02.setEnabled(false);
-                    isDone_MoBai += 1;
-
-
-                    //Xử Lý End Game --- Mở Hết Bài
-                    if(isDone_MoBai == 3){
-                        Show_Player_EndGame(CheDoChoi, WhoIsWinner(CheDoChoi));
+                if (CheDoChoi == 0 && isDone_MoBai == 3) {
+                    //Khi Mở Bài Hoàn Tất
+                    if (WhoIsWinner(CheDoChoi) == 0) {
+                        Show_Player_EndGame(CheDoChoi, 0);
                     }
-                }
-
-                //Chế Độ Chơi Người vs Người
-                if(CheDoChoi == 1){
-
+                    if (WhoIsWinner(CheDoChoi) == 1) {
+                        Show_Player_EndGame(CheDoChoi, 1);
+                    }
+                    if (WhoIsWinner(CheDoChoi) == 2) {
+                        Show_Player_EndGame(CheDoChoi, 2);
+                    }
                 }
             }
         });
     }
 
-    protected void Card_Nguoi_03_Click(){
-        Card_Nguoi_03.setOnClickListener(new View.OnClickListener() {
+    //Click Mở Bài 03_Player03
+    protected void Card_Player02_03_Click() {
+        Card_Player02_03.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Lỗi Chưa Click Chia Bài
-                if(PLayer02_ListCard.size() == 0){
-                    return;
-                }
-
-                Card card = PLayer02_ListCard.get(2);
+                isDone_MoBai += 1;
+                Card_Player02_03.setEnabled(false);
+                Card_Player02_03.setImageResource(PLayer02_ListCard.get(2).getIMG_SRC());//<----Hiển Thị Lá Bài
 
                 //Chế Độ Chơi Người vs Máy
-                if(CheDoChoi == 0){
-                    Card_Nguoi_03.setImageResource(card.getIMG_SRC());
-                    Card_Nguoi_03.setEnabled(false);
-                    isDone_MoBai += 1;
-
-                    //Xử Lý End Game --- Mở Hết Bài
-                    if(isDone_MoBai == 3){
-                        Show_Player_EndGame(CheDoChoi, WhoIsWinner(CheDoChoi));
+                if (CheDoChoi == 0 && isDone_MoBai == 3) {
+                    //Khi Mở Bài Hoàn Tất
+                    if (WhoIsWinner(CheDoChoi) == 0) {
+                        Show_Player_EndGame(CheDoChoi, 0);
                     }
-                }
-
-                //Chế Độ Chơi Người vs Người
-                if(CheDoChoi == 1){
-
+                    if (WhoIsWinner(CheDoChoi) == 1) {
+                        Show_Player_EndGame(CheDoChoi, 1);
+                    }
+                    if (WhoIsWinner(CheDoChoi) == 2) {
+                        Show_Player_EndGame(CheDoChoi, 2);
+                    }
                 }
             }
         });
     }
 
-    //------------------------------------------------------
-    //Xử Lý Chơi
+    //Control ON_OFF Card
+    protected void Control_Card_ON_OFF(boolean key_player01, boolean key_player02) {
+        Card_Player01_01.setEnabled(key_player01);
+        Card_Player01_02.setEnabled(key_player01);
+        Card_Player01_03.setEnabled(key_player01);
 
-    //Control ON_OFF Card theo Chế Độ Chơi
-    protected void Control_Card_ON_OFF(boolean key_player01, boolean key_player02){
-        Card_May_01.setEnabled(key_player01);
-        Card_May_02.setEnabled(key_player01);
-        Card_May_03.setEnabled(key_player01);
-
-        Card_Nguoi_01.setEnabled(key_player02);
-        Card_Nguoi_02.setEnabled(key_player02);
-        Card_Nguoi_03.setEnabled(key_player02);
+        Card_Player02_01.setEnabled(key_player02);
+        Card_Player02_02.setEnabled(key_player02);
+        Card_Player02_03.setEnabled(key_player02);
     }
 
     //Get Số Ngẫu Nhiên
@@ -354,22 +452,67 @@ public class MainActivity extends AppCompatActivity {
         return random.nextInt(51);
     }
 
-
     protected void ChiaBai() {
         int temp_01, temp_02;
 
         for (int i = 0; i < 3; i++) {
             if (PLayer01_ListCard.size() > 0 && PLayer02_ListCard.size() > 0) {
                 temp_01 = BAI_NGAU_NHIEN();
-                PLayer01_ListCard.add(ListPlayingCard.get(temp_01));
+                temp_02 = BAI_NGAU_NHIEN();
 
-                while (true) {
-                    temp_02 = BAI_NGAU_NHIEN();
+                //------>PLayer 01
 
-                    if (temp_01 != temp_02) {
-                        PLayer02_ListCard.add(ListPlayingCard.get(temp_02));
-                        break;
+                //Kiểm Tra Bài Player 01
+                if(PLayer01_ListCard.get(0).equals(ListPlayingCard.get(temp_01))){
+                    ChiaBai();
+                }
+                if (PLayer01_ListCard.size() > 1 && PLayer02_ListCard.size() > 1){
+                    if(PLayer01_ListCard.get(1).equals(ListPlayingCard.get(temp_01))){
+                        ChiaBai();
                     }
+                }
+
+                //Kiểm Tra Bài Player 02
+                if(PLayer02_ListCard.get(0).equals(ListPlayingCard.get(temp_01))){
+                    ChiaBai();
+                }
+                if (PLayer01_ListCard.size() > 1 && PLayer02_ListCard.size() > 1){
+                    if(PLayer02_ListCard.get(1).equals(ListPlayingCard.get(temp_01))){
+                        ChiaBai();
+                    }
+                }
+
+                //Đảm Bảo Tạo Đúng 3 Lá Bài
+                if(PLayer01_ListCard.size() != 3){
+                    PLayer01_ListCard.add(ListPlayingCard.get(temp_01));
+                }
+
+
+                //------>PLayer 02
+
+                //Kiểm Tra Bài Player 01
+                if(PLayer01_ListCard.get(0).equals(ListPlayingCard.get(temp_02))){
+                    ChiaBai();
+                }
+                if (PLayer01_ListCard.size() > 1 && PLayer02_ListCard.size() > 1){
+                    if(PLayer01_ListCard.get(1).equals(ListPlayingCard.get(temp_02))){
+                        ChiaBai();
+                    }
+                }
+
+                //Kiểm Tra Bài Player 02
+                if(PLayer02_ListCard.get(0).equals(ListPlayingCard.get(temp_02))){
+                    ChiaBai();
+                }
+                if (PLayer01_ListCard.size() > 1 && PLayer02_ListCard.size() > 1){
+                    if(PLayer02_ListCard.get(1).equals(ListPlayingCard.get(temp_02))){
+                        ChiaBai();
+                    }
+                }
+
+                //Đảm Bảo Tạo Đúng 3 Lá Bài
+                if(PLayer02_ListCard.size() != 3){
+                    PLayer02_ListCard.add(ListPlayingCard.get(temp_02));
                 }
             } else {
                 //Chọn Lá Bài Đầu Tiên
@@ -389,37 +532,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Get Người Chiến Thắng
-    protected int WhoIsWinner(int CheDoChoi){
+    protected int WhoIsWinner(int CheDoChoi) {
         //Chế độ chơi Người vs Máy
-        if(CheDoChoi == 0 && isDone_MoBai == 3){
-            String Diem_Player01, Diem_Player02;
-
-            Diem_Player01 = Integer.toString(GetScore_Player(PLayer01_ListCard));
-            Diem_Player02 = Integer.toString(GetScore_Player(PLayer02_ListCard));
-
-            //Lấy Giá Trị Cuối
-            Diem_Player01 = Character.toString(Diem_Player01.charAt(Diem_Player01.length() - 1));
-            Diem_Player02 = Character.toString(Diem_Player02.charAt(Diem_Player02.length() - 1));
-
-            switch (Integer.compare(Integer.parseInt(Diem_Player01), Integer.parseInt(Diem_Player02))){
-                //Nếu Player 02 Win ---> 0
-                case -1:
-                    return 0;
-                //Nếu Hoà ---> 2
-                case 0:
-                    return 2;
-                //Nếu Player 01 Win ---> 1
-                case 1:
-                    return 1;
-            }
+        if (CheDoChoi == 0 && isDone_MoBai == 3) {
+            return XuLyTinhHuongChoi();
+        }
+        //Chế độ chơi Người vs Máy
+        if (CheDoChoi == 2) {
+            return XuLyTinhHuongChoi();
         }
 
         return -1;
     }
 
     //Get Điểm
-    protected int ConvertStringValue_toInteger(String Card_Value){
-        switch (Card_Value){
+    protected int ConvertStringValue_toInteger(String Card_Value) {
+        switch (Card_Value) {
             case "a":
                 return 1;
             case "2":
@@ -441,69 +569,222 @@ public class MainActivity extends AppCompatActivity {
             case "10":
                 return 10;
             case "j":
-                return 10;
+                return 11;
             case "q":
-                return 10;
+                return 12;
             case "k":
-                return 10;
+                return 13;
         }
 
         return -1;
     }
 
-    //Tính Điểm Người Chơi
-    protected int GetScore_Player(ArrayList<Card> cards){
-        int Card01_Value = ConvertStringValue_toInteger(cards.get(0).getValue());
-        int Card02_Value = ConvertStringValue_toInteger(cards.get(1).getValue());
-        int Card03_Value = ConvertStringValue_toInteger(cards.get(2).getValue());
+    //Xử Lý Tính Giá Trị Thẻ Bài
+    //Trả Về
+    //1---Nếu Như Player 01 Win
+    //2---Nếu Như Player 02 Win
+    //0---Nếu Như Hoà
+    //-1---Có Lỗi Xảy Ra
+    protected int XuLyTinhHuongChoi() {
+        int Value_Player01 = 0;
+        int Value_Player02 = 0;
 
-        return (Card01_Value + Card02_Value + Card03_Value);
+        //Check Player 01 Có 3 Lá Bài Tây Không ?
+        if (Check_3_La_Bai_Tay(PLayer01_ListCard)) {
+            Value_Player01 = Integer.MAX_VALUE;
+        }
+
+        //Check Player 02 Có 3 Lá Bài Tây Không ?
+        if (Check_3_La_Bai_Tay(PLayer02_ListCard)) {
+            Value_Player02 = Integer.MAX_VALUE;
+        }
+
+        //Trường Hợp Cả 2 Player Đều Có 3 Lá Bài Tây
+        if (Value_Player01 == Integer.MAX_VALUE && Value_Player02 == Integer.MAX_VALUE) {
+            return 0;
+        }
+
+        //Trường Hợp Player 01 Win (3 Lá Tây), Player 02 != 3 Lá Tây
+        if (Value_Player01 == Integer.MAX_VALUE && Value_Player02 != Integer.MAX_VALUE) {
+            return 1;
+        }
+
+        //Trường Hợp Player 02 Win (3 Lá Tây), Player 01 != 3 Lá Tây
+        if (Value_Player01 != Integer.MAX_VALUE && Value_Player02 == Integer.MAX_VALUE) {
+            return 2;
+        }
+
+        //------------------------------------------------------------------------------
+        //Trường Hợp Còn Lại
+        //------------------------------------------------------------------------------
+
+        //Lấy Những Giá Trị Không Phải Là Bài Tây Ở Player 01
+        if (!CheckBaiTay(PLayer01_ListCard.get(0))) {
+            Value_Player01 += ConvertStringValue_toInteger(PLayer01_ListCard.get(0).getValue());
+        }
+        if (!CheckBaiTay(PLayer01_ListCard.get(1))) {
+            Value_Player01 += ConvertStringValue_toInteger(PLayer01_ListCard.get(1).getValue());
+        }
+        if (!CheckBaiTay(PLayer01_ListCard.get(2))) {
+            Value_Player01 += ConvertStringValue_toInteger(PLayer01_ListCard.get(2).getValue());
+        }
+
+        //Lấy Những Giá Trị Không Phải Là Bài Tây Ở Player 02
+        if (!CheckBaiTay(PLayer02_ListCard.get(0))) {
+            Value_Player02 += ConvertStringValue_toInteger(PLayer02_ListCard.get(0).getValue());
+        }
+        if (!CheckBaiTay(PLayer02_ListCard.get(1))) {
+            Value_Player02 += ConvertStringValue_toInteger(PLayer02_ListCard.get(1).getValue());
+        }
+        if (!CheckBaiTay(PLayer02_ListCard.get(2))) {
+            Value_Player02 += ConvertStringValue_toInteger(PLayer02_ListCard.get(2).getValue());
+        }
+
+        //Lấy Giá Trị Cuối
+        String temp = Integer.toString(Value_Player01);
+        Value_Player01 = Integer.parseInt(Character.toString(temp.charAt(temp.length() - 1)));
+        temp = Integer.toString(Value_Player02);
+        Value_Player02 = Integer.parseInt(Character.toString(temp.charAt(temp.length() - 1)));
+
+        //Player 01 Thắng
+        if (Value_Player01 > Value_Player02) {
+            return 1;
+        }
+
+        //Player 02 Thắng
+        if (Value_Player01 < Value_Player02) {
+            return 2;
+        }
+
+        //Player 01 Thắng
+        if (Value_Player01 == Value_Player02) {
+            return 0;
+        }
+
+        return -1;
     }
 
-    //Show All Card_Player
-    protected void Show_Player_EndGame(int CheDoChoi, int winner){
-        if(CheDoChoi == 0){
-            Card_May_01.setImageResource(PLayer01_ListCard.get(0).getIMG_SRC());
-            Card_May_02.setImageResource(PLayer01_ListCard.get(1).getIMG_SRC());
-            Card_May_03.setImageResource(PLayer01_ListCard.get(2).getIMG_SRC());
+    //Check Lá Bài Đó Có Phải Là Bài Tây
+    protected boolean CheckBaiTay(Card card) {
+        if (ConvertStringValue_toInteger(card.getValue()) == 11) {
+            return true;
+        }
+        if (ConvertStringValue_toInteger(card.getValue()) == 12) {
+            return true;
+        }
+        if (ConvertStringValue_toInteger(card.getValue()) == 13) {
+            return true;
+        }
+
+        return false;
+    }
+
+    //Check Có Phải Có 3 Lá Bài Tây
+    protected boolean Check_3_La_Bai_Tay(ArrayList<Card> dsCard) {
+        if (CheckBaiTay(dsCard.get(0)) && CheckBaiTay(dsCard.get(1))) {
+            if (CheckBaiTay(dsCard.get(2))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    //Show Infor Khi Kết Thúc Game
+    protected void Show_Player_EndGame(int CheDoChoi, int winner) {
+        if (CheDoChoi == 0) {
+            Card_Player01_01.setImageResource(PLayer01_ListCard.get(0).getIMG_SRC());
+            Card_Player01_02.setImageResource(PLayer01_ListCard.get(1).getIMG_SRC());
+            Card_Player01_03.setImageResource(PLayer01_ListCard.get(2).getIMG_SRC());
 
             //Player 02 Winner
-            if(winner == 0){
+            if (winner == 2) {
                 Diem_Player02 += 1;
                 txtDiem_Player01.setText(Integer.toString(Diem_Player01));
                 txtDiem_Player02.setText(Integer.toString(Diem_Player02));
-                container_logo_winner_player02.setVisibility(View.VISIBLE);
                 logo_winner_player02.setVisibility(View.VISIBLE);
+                logo_close_player01.setVisibility(View.VISIBLE);
             }
 
             //Player 01 Winner
-            if(winner == 1){
+            if (winner == 1) {
                 Diem_Player01 += 1;
                 txtDiem_Player01.setText(Integer.toString(Diem_Player01));
                 txtDiem_Player02.setText(Integer.toString(Diem_Player02));
-                container_logo_winner_player01.setVisibility(View.VISIBLE);
                 logo_winner_player01.setVisibility(View.VISIBLE);
+                logo_close_player02.setVisibility(View.VISIBLE);
             }
 
             //Hoà Nhau
-            if(winner == 2){
-                container_logo_winner_player01.setVisibility(View.VISIBLE);
-                container_logo_winner_player02.setVisibility(View.VISIBLE);
+            if (winner == 0) {
                 logo_draw_player01.setVisibility(View.VISIBLE);
                 logo_draw_player02.setVisibility(View.VISIBLE);
             }
         }
-        if(CheDoChoi == 1){
 
+        //Chế Độ Chơi Máy vs Máy
+        if (CheDoChoi == 2) {
+            Card_Player01_01.setImageResource(PLayer01_ListCard.get(0).getIMG_SRC());
+            Card_Player01_02.setImageResource(PLayer01_ListCard.get(1).getIMG_SRC());
+            Card_Player01_03.setImageResource(PLayer01_ListCard.get(2).getIMG_SRC());
+            Card_Player02_01.setImageResource(PLayer02_ListCard.get(0).getIMG_SRC());
+            Card_Player02_02.setImageResource(PLayer02_ListCard.get(1).getIMG_SRC());
+            Card_Player02_03.setImageResource(PLayer02_ListCard.get(2).getIMG_SRC());
+
+            //Player 02 Winner
+            if (winner == 2) {
+                Diem_Player02 += 1;
+                txtDiem_Player01.setText(Integer.toString(Diem_Player01));
+                txtDiem_Player02.setText(Integer.toString(Diem_Player02));
+                logo_winner_player02.setVisibility(View.VISIBLE);
+                logo_close_player01.setVisibility(View.VISIBLE);
+            }
+
+            //Player 01 Winner
+            if (winner == 1) {
+                Diem_Player01 += 1;
+                txtDiem_Player01.setText(Integer.toString(Diem_Player01));
+                txtDiem_Player02.setText(Integer.toString(Diem_Player02));
+                logo_winner_player01.setVisibility(View.VISIBLE);
+                logo_close_player02.setVisibility(View.VISIBLE);
+            }
+
+            //Hoà Nhau
+            if (winner == 0) {
+                logo_draw_player01.setVisibility(View.VISIBLE);
+                logo_draw_player02.setVisibility(View.VISIBLE);
+            }
         }
-        if (CheDoChoi == 2){
-            Card_May_01.setImageResource(PLayer01_ListCard.get(0).getIMG_SRC());
-            Card_May_02.setImageResource(PLayer01_ListCard.get(1).getIMG_SRC());
-            Card_May_03.setImageResource(PLayer01_ListCard.get(2).getIMG_SRC());
+    }
 
-            Card_Nguoi_01.setImageResource(PLayer02_ListCard.get(0).getIMG_SRC());
-            Card_Nguoi_02.setImageResource(PLayer02_ListCard.get(1).getIMG_SRC());
-            Card_Nguoi_03.setImageResource(PLayer02_ListCard.get(2).getIMG_SRC());
+    //Cập Nhật Lại Giao Diện Phù Hợp Với Chế Độ Chơi
+    protected void Update_CheDoiChoi(int CheDoChoi){
+        if(CheDoChoi == 0){
+            txtTen_Player01.setText("Máy");
+            txtTen_Player02.setText("Người Chơi");
+            txtDiem_Player01.setText("0");
+            txtDiem_Player02.setText("0");
+            Diem_Player01 = 0;
+            Diem_Player02 = 0;
+            return;
+        }
+        if(CheDoChoi == 1){
+            txtTen_Player01.setText("Người Chơi 01");
+            txtTen_Player02.setText("Người Chơi 02");
+            txtDiem_Player01.setText("0");
+            txtDiem_Player02.setText("0");
+            Diem_Player01 = 0;
+            Diem_Player02 = 0;
+            return;
+        }
+        if(CheDoChoi == 2){
+            txtTen_Player01.setText("Máy 01");
+            txtTen_Player02.setText("Máy 02");
+            txtDiem_Player01.setText("0");
+            txtDiem_Player02.setText("0");
+            Diem_Player01 = 0;
+            Diem_Player02 = 0;
+            return;
         }
     }
 }

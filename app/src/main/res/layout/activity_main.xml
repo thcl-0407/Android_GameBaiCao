@@ -15,7 +15,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-
+            android:background="@drawable/border_bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -35,10 +35,24 @@
                 android:textStyle="bold"></TextView>
 
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:fontFamily="@font/rubik"
+                android:gravity="end"
+                android:paddingTop="10dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="10dp"
+                android:text="Điểm"
+                android:textColor="#fff"
+                android:textSize="16sp"
+                android:textStyle="bold"></TextView>
+
+            <TextView
                 android:id="@+id/txtDiem_Player01"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="0.3"
                 android:fontFamily="@font/rubik"
                 android:gravity="end"
                 android:paddingTop="10dp"
@@ -59,21 +73,21 @@
             android:paddingBottom="10dp">
 
             <ImageView
-                android:id="@+id/card_may_01"
+                android:id="@+id/card_player01_01"
                 android:layout_width="100dp"
                 android:layout_height="150dp"
                 android:layout_marginEnd="5dp"
                 android:background="@drawable/round_image"></ImageView>
 
             <ImageView
-                android:id="@+id/card_may_02"
+                android:id="@+id/card_player01_02"
                 android:layout_width="100dp"
                 android:layout_height="150dp"
                 android:layout_marginEnd="5dp"
                 android:background="@drawable/round_image"></ImageView>
 
             <ImageView
-                android:id="@+id/card_may_03"
+                android:id="@+id/card_player01_03"
                 android:layout_width="100dp"
                 android:layout_height="150dp"
                 android:background="@drawable/round_image"></ImageView>
@@ -82,8 +96,7 @@
 
     <LinearLayout
         android:id="@+id/container_logo_winner_player01"
-        android:visibility="gone"
-        android:background="#006634"
+        android:visibility="visible"
         android:gravity="center"
         app:layout_constraintTop_toBottomOf="@+id/container_cards_player01"
         app:layout_constraintBottom_toTopOf="@+id/container_controller"
@@ -91,13 +104,31 @@
         android:layout_width="match_parent"
         android:orientation="horizontal">
 
-        <ImageView
-            android:visibility="gone"
+        <TextView
             android:id="@+id/logo_winner_player01"
-            android:layout_marginStart="10dp"
-            android:src="@drawable/logo_winner"
-            android:layout_width="80dp"
-            android:layout_height="20dp"></ImageView>
+            android:visibility="gone"
+            android:textAlignment="center"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="THẮNG"
+            android:textSize="20sp"
+            android:fontFamily="@font/rubik_medium"
+            android:textColor="#ffc851"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></TextView>
+
+        <TextView
+            android:id="@+id/logo_close_player01"
+            android:visibility="gone"
+            android:textAlignment="center"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="THUA"
+            android:textSize="20sp"
+            android:fontFamily="@font/rubik_medium"
+            android:textColor="#D32F2F"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></TextView>
 
         <TextView
             android:id="@+id/logo_draw_player01"
@@ -105,12 +136,11 @@
             android:textAlignment="center"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:layout_marginStart="10dp"
-            android:text="Hoà"
+            android:text="HOÀ"
             android:textSize="20sp"
             android:fontFamily="@font/rubik_medium"
             android:textColor="#fff"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"></TextView>
     </LinearLayout>
 
@@ -124,6 +154,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <Button
+            android:id="@+id/btnCheDoiChoi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="5dp"
@@ -142,12 +173,15 @@
             android:layout_height="wrap_content"
             android:background="@drawable/circle_button"
             android:elevation="20dp"
+            android:textColor="#353535"
             android:fontFamily="@font/rubik_medium"
-            android:text="Chia Bài"
+            android:text="Chia"
+            android:textSize="18sp"
             android:textAlignment="center"
             android:textStyle="bold"></Button>
 
         <Button
+            android:id="@+id/btnXemBangDiem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
@@ -162,9 +196,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/container_logo_winner_player02"
-        android:visibility="gone"
-        android:background="#006634"
+        android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -172,13 +204,31 @@
         app:layout_constraintBottom_toTopOf="@+id/container_cards_player02"
         app:layout_constraintTop_toBottomOf="@+id/container_controller">
 
-        <ImageView
-            android:visibility="gone"
+        <TextView
             android:id="@+id/logo_winner_player02"
-            android:layout_width="80dp"
-            android:layout_height="20dp"
-            android:layout_marginStart="10dp"
-            android:src="@drawable/logo_winner"></ImageView>
+            android:visibility="gone"
+            android:textAlignment="center"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="THẮNG"
+            android:textSize="20sp"
+            android:fontFamily="@font/rubik_medium"
+            android:textColor="#ffc851"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></TextView>
+
+        <TextView
+            android:id="@+id/logo_close_player02"
+            android:visibility="gone"
+            android:textAlignment="center"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="THUA"
+            android:textSize="20sp"
+            android:fontFamily="@font/rubik_medium"
+            android:textColor="#D32F2F"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></TextView>
 
         <TextView
             android:id="@+id/logo_draw_player02"
@@ -186,12 +236,11 @@
             android:textAlignment="center"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:layout_marginStart="10dp"
-            android:text="Hoà"
+            android:text="HOÀ"
             android:textSize="20sp"
             android:fontFamily="@font/rubik_medium"
             android:textColor="#fff"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"></TextView>
     </LinearLayout>
 
@@ -211,27 +260,28 @@
             android:paddingBottom="10dp">
 
             <ImageView
-                android:id="@+id/card_nguoi_01"
+                android:id="@+id/card_player02_01"
                 android:layout_width="100dp"
                 android:layout_height="150dp"
                 android:layout_marginEnd="5dp"
                 android:background="@drawable/round_image"></ImageView>
 
             <ImageView
-                android:id="@+id/card_nguoi_02"
+                android:id="@+id/card_player02_02"
                 android:layout_width="100dp"
                 android:layout_height="150dp"
                 android:layout_marginEnd="5dp"
                 android:background="@drawable/round_image"></ImageView>
 
             <ImageView
-                android:id="@+id/card_nguoi_03"
+                android:id="@+id/card_player02_03"
                 android:layout_width="100dp"
                 android:layout_height="150dp"
                 android:background="@drawable/round_image"></ImageView>
         </LinearLayout>
 
         <LinearLayout
+            android:background="@drawable/border_top"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -245,7 +295,21 @@
                 android:paddingStart="10dp"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:text="Người"
+                android:text="Người Chơi"
+                android:textColor="#fff"
+                android:textSize="16sp"
+                android:textStyle="bold"></TextView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:fontFamily="@font/rubik"
+                android:gravity="end"
+                android:paddingTop="10dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="10dp"
+                android:text="Điểm"
                 android:textColor="#fff"
                 android:textSize="16sp"
                 android:textStyle="bold"></TextView>
@@ -254,7 +318,7 @@
                 android:id="@+id/txtDiem_Player02"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="0.3"
                 android:fontFamily="@font/rubik"
                 android:gravity="end"
                 android:paddingTop="10dp"

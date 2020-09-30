@@ -7,23 +7,25 @@ public class Card {
     private String Category;
     private int IMG_SRC;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Card card = (Card) o;
-        return IMG_SRC == card.IMG_SRC;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(IMG_SRC);
-    }
-
     public Card(String value, String category, int IMG_SRC) {
         Value = value;
         Category = category;
         this.IMG_SRC = IMG_SRC;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Card)) return false;
+        Card card = (Card) o;
+        return IMG_SRC == card.IMG_SRC &&
+                Value.equals(card.Value) &&
+                Category.equals(card.Category);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(Value, Category, IMG_SRC);
     }
 
     public String getValue() {
