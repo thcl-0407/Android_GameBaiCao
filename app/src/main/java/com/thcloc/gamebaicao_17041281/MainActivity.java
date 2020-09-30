@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -16,7 +18,12 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     ArrayList<Card> ListPlayingCard = new ArrayList<>();
+
+    //Kiểm tra Người Chơi Bấm Nút Chia Bài Chưa
     boolean isChiaBai = false;
+
+    //Kiểm Tra Người Chơi Đã Mở Hết Bài Chưa
+    int isDone_MoBai = 0;
 
     //Chế Độ Chơi
     //Người vs Máy = 0
@@ -36,8 +43,20 @@ public class MainActivity extends AppCompatActivity {
     ImageView Card_Nguoi_02;
     ImageView Card_Nguoi_03;
 
+    TextView txtDiem_Player01;
+    TextView txtDiem_Player02;
+
     ArrayList<Card> PLayer01_ListCard;
     ArrayList<Card> PLayer02_ListCard;
+
+    LinearLayout container_logo_winner_player01;
+    LinearLayout container_logo_winner_player02;
+
+    ImageView logo_winner_player01;
+    ImageView logo_winner_player02;
+
+    TextView logo_draw_player01;
+    TextView logo_draw_player02;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +88,18 @@ public class MainActivity extends AppCompatActivity {
         Card_Nguoi_01 = (ImageView) findViewById(R.id.card_nguoi_01);
         Card_Nguoi_02 = (ImageView) findViewById(R.id.card_nguoi_02);
         Card_Nguoi_03 = (ImageView) findViewById(R.id.card_nguoi_03);
+
+        txtDiem_Player01 = (TextView) findViewById(R.id.txtDiem_Player01);
+        txtDiem_Player02 = (TextView) findViewById(R.id.txtDiem_Player02);
+
+        container_logo_winner_player01 = (LinearLayout) findViewById(R.id.container_logo_winner_player01);
+        container_logo_winner_player02 = (LinearLayout) findViewById(R.id.container_logo_winner_player02);
+
+        logo_winner_player01 = (ImageView) findViewById(R.id.logo_winner_player01);
+        logo_winner_player02 = (ImageView) findViewById(R.id.logo_winner_player02);
+
+        logo_draw_player01 = (TextView) findViewById(R.id.logo_draw_player01);
+        logo_draw_player02 = (TextView) findViewById(R.id.logo_draw_player02);
 
         Control_Card_ON_OFF(false, false);
     }
@@ -187,8 +218,18 @@ public class MainActivity extends AppCompatActivity {
                     Card_Nguoi_03.setImageResource(android.R.color.transparent);
 
                     isChiaBai = false;
+                    btnChiaBai.setText("Chia Bài");
+                    isDone_MoBai = 0;
                     PLayer01_ListCard.clear();
                     PLayer02_ListCard.clear();
+
+                    //Xử Lý Các Logo Thông Báo End Game
+                    container_logo_winner_player01.setVisibility(View.GONE);
+                    container_logo_winner_player02.setVisibility(View.GONE);
+                    logo_winner_player01.setVisibility(View.GONE);
+                    logo_winner_player02.setVisibility(View.GONE);
+                    logo_draw_player01.setVisibility(View.GONE);
+                    logo_draw_player02.setVisibility(View.GONE);
                 }
             }
         });
@@ -213,6 +254,13 @@ public class MainActivity extends AppCompatActivity {
                 //Chế Độ Chơi Người vs Máy
                 if(CheDoChoi == 0){
                     Card_Nguoi_01.setImageResource(card.getIMG_SRC());
+                    Card_Nguoi_01.setEnabled(false);
+                    isDone_MoBai += 1;
+
+                    //Xử Lý End Game --- Mở Hết Bài
+                    if(isDone_MoBai == 3){
+                        Show_Player_EndGame(CheDoChoi, WhoIsWinner(CheDoChoi));
+                    }
                 }
 
                 //Chế Độ Chơi Người vs Người
@@ -237,6 +285,14 @@ public class MainActivity extends AppCompatActivity {
                 //Chế Độ Chơi Người vs Máy
                 if(CheDoChoi == 0){
                     Card_Nguoi_02.setImageResource(card.getIMG_SRC());
+                    Card_Nguoi_02.setEnabled(false);
+                    isDone_MoBai += 1;
+
+
+                    //Xử Lý End Game --- Mở Hết Bài
+                    if(isDone_MoBai == 3){
+                        Show_Player_EndGame(CheDoChoi, WhoIsWinner(CheDoChoi));
+                    }
                 }
 
                 //Chế Độ Chơi Người vs Người
@@ -261,6 +317,13 @@ public class MainActivity extends AppCompatActivity {
                 //Chế Độ Chơi Người vs Máy
                 if(CheDoChoi == 0){
                     Card_Nguoi_03.setImageResource(card.getIMG_SRC());
+                    Card_Nguoi_03.setEnabled(false);
+                    isDone_MoBai += 1;
+
+                    //Xử Lý End Game --- Mở Hết Bài
+                    if(isDone_MoBai == 3){
+                        Show_Player_EndGame(CheDoChoi, WhoIsWinner(CheDoChoi));
+                    }
                 }
 
                 //Chế Độ Chơi Người vs Người
@@ -290,6 +353,7 @@ public class MainActivity extends AppCompatActivity {
         Random random = new Random();
         return random.nextInt(51);
     }
+
 
     protected void ChiaBai() {
         int temp_01, temp_02;
@@ -321,6 +385,125 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
+        }
+    }
+
+    //Get Người Chiến Thắng
+    protected int WhoIsWinner(int CheDoChoi){
+        //Chế độ chơi Người vs Máy
+        if(CheDoChoi == 0 && isDone_MoBai == 3){
+            String Diem_Player01, Diem_Player02;
+
+            Diem_Player01 = Integer.toString(GetScore_Player(PLayer01_ListCard));
+            Diem_Player02 = Integer.toString(GetScore_Player(PLayer02_ListCard));
+
+            //Lấy Giá Trị Cuối
+            Diem_Player01 = Character.toString(Diem_Player01.charAt(Diem_Player01.length() - 1));
+            Diem_Player02 = Character.toString(Diem_Player02.charAt(Diem_Player02.length() - 1));
+
+            switch (Integer.compare(Integer.parseInt(Diem_Player01), Integer.parseInt(Diem_Player02))){
+                //Nếu Player 02 Win ---> 0
+                case -1:
+                    return 0;
+                //Nếu Hoà ---> 2
+                case 0:
+                    return 2;
+                //Nếu Player 01 Win ---> 1
+                case 1:
+                    return 1;
+            }
+        }
+
+        return -1;
+    }
+
+    //Get Điểm
+    protected int ConvertStringValue_toInteger(String Card_Value){
+        switch (Card_Value){
+            case "a":
+                return 1;
+            case "2":
+                return 2;
+            case "3":
+                return 3;
+            case "4":
+                return 4;
+            case "5":
+                return 5;
+            case "6":
+                return 6;
+            case "7":
+                return 7;
+            case "8":
+                return 8;
+            case "9":
+                return 9;
+            case "10":
+                return 10;
+            case "j":
+                return 10;
+            case "q":
+                return 10;
+            case "k":
+                return 10;
+        }
+
+        return -1;
+    }
+
+    //Tính Điểm Người Chơi
+    protected int GetScore_Player(ArrayList<Card> cards){
+        int Card01_Value = ConvertStringValue_toInteger(cards.get(0).getValue());
+        int Card02_Value = ConvertStringValue_toInteger(cards.get(1).getValue());
+        int Card03_Value = ConvertStringValue_toInteger(cards.get(2).getValue());
+
+        return (Card01_Value + Card02_Value + Card03_Value);
+    }
+
+    //Show All Card_Player
+    protected void Show_Player_EndGame(int CheDoChoi, int winner){
+        if(CheDoChoi == 0){
+            Card_May_01.setImageResource(PLayer01_ListCard.get(0).getIMG_SRC());
+            Card_May_02.setImageResource(PLayer01_ListCard.get(1).getIMG_SRC());
+            Card_May_03.setImageResource(PLayer01_ListCard.get(2).getIMG_SRC());
+
+            //Player 02 Winner
+            if(winner == 0){
+                Diem_Player02 += 1;
+                txtDiem_Player01.setText(Integer.toString(Diem_Player01));
+                txtDiem_Player02.setText(Integer.toString(Diem_Player02));
+                container_logo_winner_player02.setVisibility(View.VISIBLE);
+                logo_winner_player02.setVisibility(View.VISIBLE);
+            }
+
+            //Player 01 Winner
+            if(winner == 1){
+                Diem_Player01 += 1;
+                txtDiem_Player01.setText(Integer.toString(Diem_Player01));
+                txtDiem_Player02.setText(Integer.toString(Diem_Player02));
+                container_logo_winner_player01.setVisibility(View.VISIBLE);
+                logo_winner_player01.setVisibility(View.VISIBLE);
+            }
+
+            //Hoà Nhau
+            if(winner == 2){
+                container_logo_winner_player01.setVisibility(View.VISIBLE);
+                container_logo_winner_player02.setVisibility(View.VISIBLE);
+                logo_draw_player01.setVisibility(View.VISIBLE);
+                logo_draw_player02.setVisibility(View.VISIBLE);
+            }
+        }
+        if(CheDoChoi == 1){
+
+        }
+        if (CheDoChoi == 2){
+            Card_May_01.setImageResource(PLayer01_ListCard.get(0).getIMG_SRC());
+            Card_May_02.setImageResource(PLayer01_ListCard.get(1).getIMG_SRC());
+            Card_May_03.setImageResource(PLayer01_ListCard.get(2).getIMG_SRC());
+
+            Card_Nguoi_01.setImageResource(PLayer02_ListCard.get(0).getIMG_SRC());
+            Card_Nguoi_02.setImageResource(PLayer02_ListCard.get(1).getIMG_SRC());
+            Card_Nguoi_03.setImageResource(PLayer02_ListCard.get(2).getIMG_SRC());
         }
     }
 }
