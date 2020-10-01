@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="#1C4421"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stretchColumns="*"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <TableRow>
+            <TextView
+                android:layout_span="2"
+                android:textColor="#fff"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:fontFamily="@font/rubik_medium"
+                android:background="@drawable/border_text_view_006634"
+                android:id="@+id/txtGame_Index"
+                android:textAlignment="center"
+                android:text="Game 01"></TextView>
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                android:textColor="#fff"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:fontFamily="@font/rubik"
+                android:background="@drawable/border_text_view"
+                android:id="@+id/txtName_Player01"
+                android:textAlignment="center"
+                android:text="Name Playler 01"></TextView>
+
+            <TextView
+                android:textColor="#fff"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:fontFamily="@font/rubik"
+                android:background="@drawable/border_text_view"
+                android:id="@+id/txtName_Player02"
+                android:textAlignment="center"
+                android:text="Name Playler 02"></TextView>
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                android:textColor="#fff"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:fontFamily="@font/rubik"
+                android:background="@drawable/border_text_view"
+                android:id="@+id/txtValue_Player01"
+                android:textAlignment="center"
+                android:text="0"></TextView>
+
+            <TextView
+                android:textColor="#fff"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:fontFamily="@font/rubik"
+                android:background="@drawable/border_text_view"
+                android:id="@+id/txtValue_Player02"
+                android:textAlignment="center"
+                android:text="0"></TextView>
+        </TableRow>
+    </TableLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

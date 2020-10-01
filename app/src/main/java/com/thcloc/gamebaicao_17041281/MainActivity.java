@@ -8,12 +8,17 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -21,8 +26,11 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
+    int ManChoi_So = 0;
+
     ArrayList<Card> ListPlayingCard = new ArrayList<>();
     ArrayList<Integer> List_Index_Card = new ArrayList<>();
+    ArrayList<KetQuaChoi> List_KetQuaChoi = new ArrayList<>();
 
     //Kiểm tra Người Chơi Bấm Nút Chia Bài Chưa
     boolean isChiaBai = false;
@@ -65,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
     TextView logo_close_player01;
     TextView logo_close_player02;
 
+    ListView lvwBangDiem;
+
     RadioButton rbtn_Nguoi_May;
     RadioButton rbtn_Nguoi_Nguoi;
     RadioButton rbtn_May_May;
@@ -87,6 +97,9 @@ public class MainActivity extends AppCompatActivity {
         Card_Player02_01_Click();
         Card_Player02_02_Click();
         Card_Player02_03_Click();
+
+        //Khoá Chức Năng Sau, Khi Lần Đầu Vào Game
+        btnXemBangDiem.setEnabled(false);
     }
 
     protected void Init_Data() {
@@ -242,6 +255,8 @@ public class MainActivity extends AppCompatActivity {
                     //Ẩn Nút Xem Bảng Điểm
                     btnXemBangDiem.setVisibility(View.GONE);
 
+                    //Mở Khoá Chức Năng Sau, Khi Đã Vào Game
+                    btnXemBangDiem.setEnabled(true);
                 } else {
                     //Reset Ván Mới
                     //------------------------------------------------------------
@@ -262,6 +277,7 @@ public class MainActivity extends AppCompatActivity {
                     List_Index_Card.clear();
                     PLayer01_ListCard.clear();
                     PLayer02_ListCard.clear();
+                    Control_Card_ON_OFF(false, false);
 
                     //Hiện Nút Chế Độ Chơi
                     btnCheDoChoi.setVisibility(View.VISIBLE);
@@ -285,11 +301,16 @@ public class MainActivity extends AppCompatActivity {
         btnCheDoChoi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                DisplayMetrics metrics = new DisplayMetrics();
+                getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+                int height = metrics.heightPixels;
+                int width = metrics.widthPixels;
+
                 final Dialog dialog = new Dialog(MainActivity.this);
-                dialog.requestWindowFeature(Window.FEATURE_ACTION_BAR);
                 dialog.setContentView(R.layout.layout_che_do_choi);
                 dialog.setCanceledOnTouchOutside(false);
-                dialog.getWindow().setLayout(800, 800);//<---Set Kích Thước
+                dialog.getWindow().setLayout((width * 5) / 6, (height * 2) / 4);//<---Set Kích Thước
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));//<---Ẩn Background Dialog
 
                 rbtn_Nguoi_May = (RadioButton) dialog.findViewById(R.id.rbtn_Nguoi_May);
@@ -344,7 +365,25 @@ public class MainActivity extends AppCompatActivity {
         btnXemBangDiem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final Dialog dialog = new Dialog(MainActivity.this);
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.setContentView(R.layout.layout_bang_diem);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));//<---Ẩn Background Dialog
 
+                Button btnThoatBangDiem = (Button) dialog.findViewById(R.id.btnThoatBangDiem);
+                lvwBangDiem = (ListView) dialog.findViewById(R.id.lvwBangDiem);
+
+                Custom_Adapter_BangDiem adapter = new Custom_Adapter_BangDiem(MainActivity.this, List_KetQuaChoi, R.layout.row_item_bang_diem);
+                lvwBangDiem.setAdapter((ListAdapter) adapter);
+
+                btnThoatBangDiem.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.cancel();
+                    }
+                });
+
+                dialog.show();
             }
         });
     }
@@ -665,13 +704,13 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                if(Check_IsHave == false){
+                if (Check_IsHave == false) {
                     List_Index_Card.add(temp);
                 }
             }
         }
 
-        if(List_Index_Card.size() == 6){
+        if (List_Index_Card.size() == 6) {
             PLayer01_ListCard.add(ListPlayingCard.get(List_Index_Card.get(0)));
             PLayer02_ListCard.add(ListPlayingCard.get(List_Index_Card.get(1)));
             PLayer01_ListCard.add(ListPlayingCard.get(List_Index_Card.get(2)));
@@ -848,6 +887,8 @@ public class MainActivity extends AppCompatActivity {
 
     //Show Infor Khi Kết Thúc Game
     protected void Show_Player_EndGame(int CheDoChoi, int winner) {
+        ManChoi_So += 1;//<--Đến Số Ván Chơi
+
         //Chế Độ Chơi Người vs Máy
         if (CheDoChoi == 0) {
             Card_Player01_01.setImageResource(PLayer01_ListCard.get(0).getIMG_SRC());
@@ -939,10 +980,19 @@ public class MainActivity extends AppCompatActivity {
                 logo_draw_player02.setVisibility(View.VISIBLE);
             }
         }
+
+        Luu_Ket_Qua_Choi(Diem_Player01, Diem_Player02, winner);
     }
 
+    //Lưu Kết Quả Chơi
+    protected void Luu_Ket_Qua_Choi(int Diem_Player01, int Diem_Player02, int Winner){
+        KetQuaChoi kqc = new KetQuaChoi(ManChoi_So, txtTen_Player01.getText().toString(), txtTen_Player02.getText().toString(), Diem_Player01, Diem_Player02, Winner);
+        List_KetQuaChoi.add(kqc);
+    }
     //Cập Nhật Lại Giao Diện Phù Hợp Với Chế Độ Chơi
     protected void Update_CheDoiChoi(int CheDoChoi) {
+        ManChoi_So = 0;
+
         if (CheDoChoi == 0) {
             txtTen_Player01.setText("Máy");
             txtTen_Player02.setText("Người Chơi");
@@ -950,6 +1000,7 @@ public class MainActivity extends AppCompatActivity {
             txtDiem_Player02.setText("0");
             Diem_Player01 = 0;
             Diem_Player02 = 0;
+            List_KetQuaChoi.clear();
             return;
         }
         if (CheDoChoi == 1) {
@@ -959,6 +1010,7 @@ public class MainActivity extends AppCompatActivity {
             txtDiem_Player02.setText("0");
             Diem_Player01 = 0;
             Diem_Player02 = 0;
+            List_KetQuaChoi.clear();
             return;
         }
         if (CheDoChoi == 2) {
@@ -968,6 +1020,7 @@ public class MainActivity extends AppCompatActivity {
             txtDiem_Player02.setText("0");
             Diem_Player01 = 0;
             Diem_Player02 = 0;
+            List_KetQuaChoi.clear();
             return;
         }
     }
