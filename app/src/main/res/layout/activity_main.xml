@@ -15,6 +15,10 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:background="@drawable/border_bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -281,6 +285,10 @@
         </LinearLayout>
 
         <LinearLayout
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:background="@drawable/border_top"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

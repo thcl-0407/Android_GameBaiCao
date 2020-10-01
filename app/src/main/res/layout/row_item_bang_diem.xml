@@ -20,7 +20,7 @@
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
                 android:fontFamily="@font/rubik_medium"
-                android:background="@drawable/border_text_view_006634"
+                android:background="@drawable/border_text_view_blue"
                 android:id="@+id/txtGame_Index"
                 android:textAlignment="center"
                 android:text="Game 01"></TextView>
@@ -69,6 +69,8 @@
                 android:textAlignment="center"
                 android:text="0"></TextView>
         </TableRow>
+
+        <TableRow android:padding="10dp"></TableRow>
     </TableLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
