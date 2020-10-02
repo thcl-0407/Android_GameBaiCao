@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothHidDeviceAppQosSettings;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.View;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
+    final int TIME_FINISH_GAME = 10000;
     int ManChoi_So = 0;
 
     ArrayList<Card> ListPlayingCard = new ArrayList<>();
@@ -34,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
 
     //Kiểm tra Người Chơi Bấm Nút Chia Bài Chưa
     boolean isChiaBai = false;
+
+    //Kiểm tra Đã Chia Bài Xong Chưa
+    boolean isDone_ChiaBai = false;
 
     //Kiểm Tra Người Chơi Đã Mở Hết Bài Chưa
     int isDone_MoBai = 0;
@@ -50,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
     Button btnChiaBai;
     Button btnCheDoChoi;
     Button btnXemBangDiem;
+    Button btnMoBaiNhanh_Player01;
+    Button btnMoBaiNhanh_Player02;
 
     ImageView Card_Player01_01;
     ImageView Card_Player01_02;
@@ -79,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
     RadioButton rbtn_Nguoi_Nguoi;
     RadioButton rbtn_May_May;
 
+    CountDownTimer time_player;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
         btnChiaBai_Click();
         btnCheDoChoi_Click();
         btnXemBangDiem_Click();
+        btnMoBaiNhanh_Player01_Click();
+        btnMoBaiNhanh_Player02_Click();
 
         Card_Player01_01_Click();
         Card_Player01_02_Click();
@@ -108,6 +119,8 @@ public class MainActivity extends AppCompatActivity {
         btnCheDoChoi = (Button) findViewById(R.id.btnCheDoiChoi);
         btnChiaBai = (Button) findViewById(R.id.btnChiaBai);
         btnXemBangDiem = (Button) findViewById(R.id.btnXemBangDiem);
+        btnMoBaiNhanh_Player01 = (Button) findViewById(R.id.btnMoBaiNhanh_Player01);
+        btnMoBaiNhanh_Player02 = (Button) findViewById(R.id.btnMoBaiNhanh_Player02);
 
         Card_Player01_01 = (ImageView) findViewById(R.id.card_player01_01);
         Card_Player01_02 = (ImageView) findViewById(R.id.card_player01_02);
@@ -237,9 +250,12 @@ public class MainActivity extends AppCompatActivity {
                     //Config Chế Độ Chơi
                     if (CheDoChoi == 0) {
                         Control_Card_ON_OFF(false, true);
+                        btnMoBaiNhanh_Player02.setVisibility(View.VISIBLE);
                     }
                     if (CheDoChoi == 1) {
                         Control_Card_ON_OFF(true, true);
+                        btnMoBaiNhanh_Player01.setVisibility(View.VISIBLE);
+                        btnMoBaiNhanh_Player02.setVisibility(View.VISIBLE);
                     }
                     if (CheDoChoi == 2) {
                         Control_Card_ON_OFF(false, false);
@@ -257,6 +273,14 @@ public class MainActivity extends AppCompatActivity {
 
                     //Mở Khoá Chức Năng Sau, Khi Đã Vào Game
                     btnXemBangDiem.setEnabled(true);
+
+                    if (isDone_ChiaBai) {
+                        if (CheDoChoi != 2) {
+                            btnChiaBai.setEnabled(false);
+                        }
+
+                        Auto_Finish_When_Waiting(CheDoChoi);
+                    }
                 } else {
                     //Reset Ván Mới
                     //------------------------------------------------------------
@@ -274,6 +298,7 @@ public class MainActivity extends AppCompatActivity {
                     isChiaBai = false;
                     btnChiaBai.setText("Chia");
                     isDone_MoBai = 0;
+                    isDone_ChiaBai = false;
                     List_Index_Card.clear();
                     PLayer01_ListCard.clear();
                     PLayer02_ListCard.clear();
@@ -291,6 +316,10 @@ public class MainActivity extends AppCompatActivity {
                     logo_close_player02.setVisibility(View.GONE);
                     logo_draw_player01.setVisibility(View.GONE);
                     logo_draw_player02.setVisibility(View.GONE);
+
+                    //Ẩn Nút Mở Bài Nhanh
+                    btnMoBaiNhanh_Player01.setVisibility(View.GONE);
+                    btnMoBaiNhanh_Player02.setVisibility(View.GONE);
                 }
             }
         });
@@ -399,6 +428,8 @@ public class MainActivity extends AppCompatActivity {
 
                 //Chế Độ Chơi Người vs Người
                 if (CheDoChoi == 1 && isDone_MoBai == 6) {
+                    time_player.cancel();//<---Huỷ Đếm Ngược Nếu Người Chơi Đã Mở Bài Xong
+
                     //Khi Mở Bài Hoàn Tất
                     if (WhoIsWinner(CheDoChoi) == 0) {
                         Show_Player_EndGame(CheDoChoi, 0);
@@ -414,6 +445,58 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    //Click Mở Bài Nhanh Player01
+    protected void btnMoBaiNhanh_Player01_Click() {
+        btnMoBaiNhanh_Player01.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Card_Player01_01.setImageResource(PLayer01_ListCard.get(0).getIMG_SRC());
+                Card_Player01_02.setImageResource(PLayer01_ListCard.get(1).getIMG_SRC());
+                Card_Player01_03.setImageResource(PLayer01_ListCard.get(2).getIMG_SRC());
+
+                if (CheDoChoi == 1) {
+                    isDone_MoBai += 3;
+
+                    if (isDone_MoBai == 6) {
+                        time_player.cancel();//<---Huỷ Đếm Ngược Nếu Người Chơi Đã Mở Bài Xong
+                        Show_Player_EndGame(CheDoChoi, WhoIsWinner(CheDoChoi));
+                    }
+                }
+
+                btnMoBaiNhanh_Player01.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    //Click Mở Bài Nhanh Player02
+    protected void btnMoBaiNhanh_Player02_Click() {
+        btnMoBaiNhanh_Player02.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Card_Player02_01.setImageResource(PLayer02_ListCard.get(0).getIMG_SRC());
+                Card_Player02_02.setImageResource(PLayer02_ListCard.get(1).getIMG_SRC());
+                Card_Player02_03.setImageResource(PLayer02_ListCard.get(2).getIMG_SRC());
+
+                if (CheDoChoi == 0) {
+                    time_player.cancel();//<---Huỷ Đếm Ngược Nếu Người Chơi Đã Mở Bài Xong
+                    isDone_MoBai = 3;
+                    Show_Player_EndGame(CheDoChoi, WhoIsWinner(CheDoChoi));
+                }
+
+                if (CheDoChoi == 1) {
+                    isDone_MoBai += 3;
+
+                    if (isDone_MoBai == 6) {
+                        time_player.cancel();//<---Huỷ Đếm Ngược Nếu Người Chơi Đã Mở Bài Xong
+                        Show_Player_EndGame(CheDoChoi, WhoIsWinner(CheDoChoi));
+                    }
+                }
+
+                btnMoBaiNhanh_Player02.setVisibility(View.GONE);
+            }
+        });
+    }
+
     //Click Mở Bài 02_Player01
     protected void Card_Player01_02_Click() {
         Card_Player01_02.setOnClickListener(new View.OnClickListener() {
@@ -425,6 +508,8 @@ public class MainActivity extends AppCompatActivity {
 
                 //Chế Độ Chơi Người vs Người
                 if (CheDoChoi == 1 && isDone_MoBai == 6) {
+                    time_player.cancel();//<---Huỷ Đếm Ngược Nếu Người Chơi Đã Mở Bài Xong
+
                     //Khi Mở Bài Hoàn Tất
                     if (WhoIsWinner(CheDoChoi) == 0) {
                         Show_Player_EndGame(CheDoChoi, 0);
@@ -451,6 +536,8 @@ public class MainActivity extends AppCompatActivity {
 
                 //Chế Độ Chơi Người vs Người
                 if (CheDoChoi == 1 && isDone_MoBai == 6) {
+                    time_player.cancel();//<---Huỷ Đếm Ngược Nếu Người Chơi Đã Mở Bài Xong
+
                     //Khi Mở Bài Hoàn Tất
                     if (WhoIsWinner(CheDoChoi) == 0) {
                         Show_Player_EndGame(CheDoChoi, 0);
@@ -477,6 +564,8 @@ public class MainActivity extends AppCompatActivity {
 
                 //Chế Độ Chơi Người vs Máy
                 if (CheDoChoi == 0 && isDone_MoBai == 3) {
+                    time_player.cancel();//<---Huỷ Đếm Ngược Nếu Người Chơi Đã Mở Bài Xong
+
                     //Khi Mở Bài Hoàn Tất
                     if (WhoIsWinner(CheDoChoi) == 0) {
                         Show_Player_EndGame(CheDoChoi, 0);
@@ -491,6 +580,8 @@ public class MainActivity extends AppCompatActivity {
 
                 //Chế Độ Chơi Người vs Người
                 if (CheDoChoi == 1 && isDone_MoBai == 6) {
+                    time_player.cancel();//<---Huỷ Đếm Ngược Nếu Người Chơi Đã Mở Bài Xong
+
                     //Khi Mở Bài Hoàn Tất
                     if (WhoIsWinner(CheDoChoi) == 0) {
                         Show_Player_EndGame(CheDoChoi, 0);
@@ -517,6 +608,8 @@ public class MainActivity extends AppCompatActivity {
 
                 //Chế Độ Chơi Người vs Máy
                 if (CheDoChoi == 0 && isDone_MoBai == 3) {
+                    time_player.cancel();//<---Huỷ Đếm Ngược Nếu Người Chơi Đã Mở Bài Xong
+
                     //Khi Mở Bài Hoàn Tất
                     if (WhoIsWinner(CheDoChoi) == 0) {
                         Show_Player_EndGame(CheDoChoi, 0);
@@ -557,6 +650,8 @@ public class MainActivity extends AppCompatActivity {
 
                 //Chế Độ Chơi Người vs Máy
                 if (CheDoChoi == 0 && isDone_MoBai == 3) {
+                    time_player.cancel();//<---Huỷ Đếm Ngược Nếu Người Chơi Đã Mở Bài Xong
+
                     //Khi Mở Bài Hoàn Tất
                     if (WhoIsWinner(CheDoChoi) == 0) {
                         Show_Player_EndGame(CheDoChoi, 0);
@@ -718,6 +813,8 @@ public class MainActivity extends AppCompatActivity {
             PLayer01_ListCard.add(ListPlayingCard.get(List_Index_Card.get(4)));
             PLayer02_ListCard.add(ListPlayingCard.get(List_Index_Card.get(5)));
         }
+
+        isDone_ChiaBai = true;
     }
 
     //Get Người Chiến Thắng
@@ -881,7 +978,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -982,13 +1078,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Luu_Ket_Qua_Choi(Diem_Player01, Diem_Player02, winner);
+
+        //<----Cho Phép Người Dùng Nhấn Nút Chia Bài---->
+        btnChiaBai.setText("Ván Mới");
+        btnChiaBai.setEnabled(true);
+
+        //<---Ẩn Nút Mở Nhanh--->
+        btnMoBaiNhanh_Player01.setVisibility(View.GONE);
+        btnMoBaiNhanh_Player02.setVisibility(View.GONE);
     }
 
     //Lưu Kết Quả Chơi
-    protected void Luu_Ket_Qua_Choi(int Diem_Player01, int Diem_Player02, int Winner){
+    protected void Luu_Ket_Qua_Choi(int Diem_Player01, int Diem_Player02, int Winner) {
         KetQuaChoi kqc = new KetQuaChoi(ManChoi_So, txtTen_Player01.getText().toString(), txtTen_Player02.getText().toString(), Diem_Player01, Diem_Player02, Winner);
         List_KetQuaChoi.add(kqc);
     }
+
     //Cập Nhật Lại Giao Diện Phù Hợp Với Chế Độ Chơi
     protected void Update_CheDoiChoi(int CheDoChoi) {
         ManChoi_So = 0;
@@ -1023,5 +1128,39 @@ public class MainActivity extends AppCompatActivity {
             List_KetQuaChoi.clear();
             return;
         }
+    }
+
+    protected void Auto_Finish_When_Waiting(final int CheDoChoi) {
+        //Bỏ Qua Nếu Chế Độ Chơi Là Máy vs Máy
+        if (CheDoChoi == 2) {
+            return;
+        }
+
+        time_player = new CountDownTimer(TIME_FINISH_GAME, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                btnChiaBai.setText(Long.toString(millisUntilFinished / 1000));
+            }
+
+            @Override
+            public void onFinish() {
+                if (CheDoChoi == 0) {
+                    isDone_MoBai = 3;
+                }
+                if (CheDoChoi == 1) {
+                    isDone_MoBai = 6;
+                }
+
+                Show_Player_EndGame(CheDoChoi, WhoIsWinner(CheDoChoi));
+
+                //Bổ Sung Nếu Chưa Load Đầy Đủ Hình Ảnh
+                Card_Player01_01.setImageResource(PLayer01_ListCard.get(0).getIMG_SRC());
+                Card_Player01_02.setImageResource(PLayer01_ListCard.get(1).getIMG_SRC());
+                Card_Player01_03.setImageResource(PLayer01_ListCard.get(2).getIMG_SRC());
+                Card_Player02_01.setImageResource(PLayer02_ListCard.get(0).getIMG_SRC());
+                Card_Player02_02.setImageResource(PLayer02_ListCard.get(1).getIMG_SRC());
+                Card_Player02_03.setImageResource(PLayer02_ListCard.get(2).getIMG_SRC());
+            }
+        }.start();
     }
 }
